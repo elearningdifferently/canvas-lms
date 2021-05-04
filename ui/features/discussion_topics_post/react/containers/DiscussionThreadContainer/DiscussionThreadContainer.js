@@ -40,6 +40,7 @@ import {ThreadingToolbar} from '../../components/ThreadingToolbar/ThreadingToolb
 import {useMutation, useQuery} from 'react-apollo'
 import {View} from '@instructure/ui-view'
 import {isGraded, getSpeedGraderUrl} from '../../utils'
+import theme from '@instructure/canvas-theme'
 
 export const mockThreads = {
   discussionEntry: {
@@ -70,13 +71,13 @@ export const DiscussionThreadContainer = props => {
   const [deleteDiscussionEntry] = useMutation(DELETE_DISCUSSION_ENTRY, {
     onCompleted: data => {
       if (!data.deleteDiscussionEntry.errors) {
-        setOnSuccess(I18n.t('The entry was successfully deleted'))
+        setOnSuccess(I18n.t('The reply was successfully deleted.'))
       } else {
-        setOnFailure(I18n.t('There was an unexpected error while deleting the entry'))
+        setOnFailure(I18n.t('There was an unexpected error while deleting the reply.'))
       }
     },
     onError: () => {
-      setOnFailure(I18n.t('There was an unexpected error while deleting the entry'))
+      setOnFailure(I18n.t('There was an unexpected error while deleting the reply.'))
     }
   })
   const [updateDiscussionEntryParticipant] = useMutation(UPDATE_DISCUSSION_ENTRY_PARTICIPANT, {
@@ -84,10 +85,10 @@ export const DiscussionThreadContainer = props => {
       if (!data || !data.updateDiscussionEntryParticipant) {
         return null
       }
-      setOnSuccess(I18n.t('The entry was successfully updated.'))
+      setOnSuccess(I18n.t('The reply was successfully updated.'))
     },
     onError: () => {
-      setOnFailure(I18n.t('There was an unexpected error updating the entry.'))
+      setOnFailure(I18n.t('There was an unexpected error updating the reply.'))
     }
   })
   const toggleRating = () => {
@@ -108,8 +109,8 @@ export const DiscussionThreadContainer = props => {
     })
   }
 
-  const marginDepth = `calc(4rem * ${props.depth})`
-  const replyMarginDepth = `calc(3.75rem * (${props.depth + 1}))`
+  const marginDepth = `calc(${theme.variables.spacing.xxLarge} * ${props.depth})`
+  const replyMarginDepth = `calc(${theme.variables.spacing.xxLarge} * ${props.depth + 1})`
 
   const threadActions = []
   if (!props.discussionEntry.deleted) {
@@ -199,7 +200,7 @@ export const DiscussionThreadContainer = props => {
 
   return (
     <>
-      <div style={{marginLeft: marginDepth, paddingLeft: '0.75rem'}}>
+      <div style={{marginLeft: marginDepth, paddingLeft: theme.variables.spacing.small}}>
         <Flex>
           <Flex.Item shouldShrink shouldGrow>
             {renderPostMessage()}
@@ -253,8 +254,9 @@ export const DiscussionThreadContainer = props => {
         />
       )}
       {expandReplies && props.depth === 0 && props.discussionEntry.lastReply && (
-        <div
-          style={{marginLeft: '4rem'}}
+        <View
+          as="div"
+          margin="none none none xx-large"
           width="100%"
           key={`discussion-thread-collapse-${props.discussionEntry.id}`}
         >
@@ -268,7 +270,7 @@ export const DiscussionThreadContainer = props => {
           >
             <CollapseReplies onClick={() => setExpandReplies(false)} />
           </View>
-        </div>
+        </View>
       )}
     </>
   )
@@ -298,7 +300,7 @@ const DiscussionSubentries = props => {
   })
 
   if (subentries.error) {
-    setOnFailure(I18n.t('Error loading replies'))
+    setOnFailure(I18n.t('There was an unexpected error loading the replies.'))
     return null
   }
 
